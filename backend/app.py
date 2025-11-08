@@ -17,45 +17,40 @@ def get_download_link():
         if not video_url:
             return jsonify({"error": "No URL provided"}), 400
 
-        # Configure yt_dlp
+        # Force yt_dlp to act like a browser to avoid 403s
+        common_opts = {
+            "quiet": True,
+            "nocheckcertificate": True,
+            "skip_download": True,
+            "http_headers": {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+                "Accept-Language": "en-US,en;q=0.9",
+            },
+        }
+
         if format_type == "mp3":
-            ydl_opts = {
-                "quiet": True,
-                "nocheckcertificate": True,
-                "skip_download": True,
-                "format": "bestaudio/best",
-                "postprocessors": [{
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "mp3",
-                }],
-            }
+            ydl_opts = {**common_opts, "format": "bestaudio/best"}
         else:
-            # safer fallback for best/numeric
+            # Choose quality dynamically
             if quality == "best":
-                video_format = "bestvideo+bestaudio/best"
+                fmt = "bestvideo+bestaudio/best"
             else:
                 try:
-                    q_int = int(quality)
-                    video_format = f"bestvideo[height<={q_int}]+bestaudio/best/best"
+                    q = int(quality)
+                    fmt = f"bestvideo[height<={q}]+bestaudio/best/best"
                 except ValueError:
-                    video_format = "bestvideo+bestaudio/best"
-
-            ydl_opts = {
-                "quiet": True,
-                "nocheckcertificate": True,
-                "skip_download": True,
-                "format": video_format,
-            }
+                    fmt = "bestvideo+bestaudio/best"
+            ydl_opts = {**common_opts, "format": fmt}
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=False)
             if "entries" in info:
                 info = info["entries"][0]
 
-            # Try primary URL first
+            # Primary URL
             stream_url = info.get("url")
 
-            # ✅ If missing, fallback to first valid format
+            # Fallback: grab first usable format
             if not stream_url and "formats" in info:
                 for f in reversed(info["formats"]):
                     if f.get("url") and f.get("acodec") != "none":
