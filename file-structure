@@ -1,0 +1,24 @@
+STREAMXTRACT/
+│
+├── backend/
+│   ├── downloads/
+│   ├── app.py
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── favicon.ico
+│   ├── index.html
+│   ├── script.js
+│   ├── style.css
+│   ├── theme-toggle.js
+│   └── .gitignore
+│
+├── .gitignore
+├── file-structure
+├── LICENSE
+├── README.md
+└── vercel.json
+
+this is my file structure for the STREAMXTRACT project website and in this the server
+ is now running on my laptop and when the user clicks download it saves in the download folder and then ask the user where to save but i would like to host this site
+ to the public audience so what should i do ?

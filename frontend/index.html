@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamXtract - YouTube Downloader</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>StreamXtract<br>-YouTube Downloader</h1>
+
+        <!-- ✅ YouTube URL Input -->
+        <input type="text" id="videoURL" placeholder="Enter YouTube Video URL">
+        
+        <!-- ✅ Video Thumbnail Preview Area -->
+        <div id="thumbnailContainer" class="thumbnail-container">
+            <img id="videoThumbnail" class="video-thumbnail hidden" src="" alt="Video thumbnail">
+            <div id="videoTitle" class="video-title"></div>
+        </div>
+
+        <!-- ✅ Format Selection -->
+        <label for="format">Select Format:</label>
+        <select id="format">
+            <option value="mp4">MP4 (Video)</option>
+            <option value="mp3">MP3 (Audio)</option>
+        </select>
+
+        <!-- ✅ Quality Selection with explicit options -->
+        <label for="quality">Select Quality:</label>
+        <select id="quality">
+            <!-- Default options - will be dynamically updated by JS -->
+            <option value="360">360p</option>
+            <option value="720">720p</option>
+            <option value="1080">1080p</option>
+        </select>
+
+        <!-- ✅ "Always Download Best Quality" Checkbox -->
+        <div class="checkbox-container">
+            <label for="bestQuality">
+                <input type="checkbox" id="bestQuality"> Always Download Best Quality
+            </label>
+        </div>
+
+        <!-- ✅ Download Button -->
+        <button onclick="downloadVideo()">Download</button>
+        
+        <!-- ✅ Status Message -->
+        <p id="status"></p>
+    </div>
+
+    <script src="/script.js"></script>
+    <script src="/theme-toggle.js"></script>
+</body>
+</html>
