@@ -30,14 +30,13 @@ def get_download_link():
                 }],
             }
         else:
-            # ✅ If user chooses “best”, don’t use a numeric filter
+            # ✅ Only use numeric height filters when appropriate
             if quality == "best":
                 video_format = "bestvideo+bestaudio/best"
             else:
-                # ✅ Only use height filter when it's numeric (e.g., 720, 1080)
                 try:
-                    int_quality = int(quality)
-                    video_format = f"bestvideo[height<={int_quality}]+bestaudio/best/best"
+                    q_int = int(quality)
+                    video_format = f"bestvideo[height<={q_int}]+bestaudio/best/best"
                 except ValueError:
                     video_format = "bestvideo+bestaudio/best"
 
@@ -61,7 +60,7 @@ def get_download_link():
                 "title": info.get("title", "video"),
                 "stream_url": stream_url,
                 "ext": info.get("ext", "mp4"),
-                "thumbnail": info.get("thumbnail")
+                "thumbnail": info.get("thumbnail"),
             })
 
     except Exception as e:
