@@ -212,7 +212,7 @@ async function downloadVideo() {
   button.disabled = true;
 
   try {
-    const response = await fetch("https://streamxtract-backend.onrender.com/get_download_link", {
+    const response = await fetch("http://127.0.0.1:5000/get_download_link", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
