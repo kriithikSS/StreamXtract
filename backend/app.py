@@ -17,7 +17,7 @@ def get_download_link():
         if not video_url:
             return jsonify({"error": "No URL provided"}), 400
 
-        # ✅ Handle mp3 vs mp4 separately
+        # Configure yt_dlp
         if format_type == "mp3":
             ydl_opts = {
                 "quiet": True,
@@ -30,7 +30,7 @@ def get_download_link():
                 }],
             }
         else:
-            # ✅ Only use numeric height filters when appropriate
+            # safer fallback for best/numeric
             if quality == "best":
                 video_format = "bestvideo+bestaudio/best"
             else:
@@ -52,7 +52,16 @@ def get_download_link():
             if "entries" in info:
                 info = info["entries"][0]
 
+            # Try primary URL first
             stream_url = info.get("url")
+
+            # ✅ If missing, fallback to first valid format
+            if not stream_url and "formats" in info:
+                for f in reversed(info["formats"]):
+                    if f.get("url") and f.get("acodec") != "none":
+                        stream_url = f["url"]
+                        break
+
             if not stream_url:
                 return jsonify({"error": "No direct stream URL found"}), 500
 
