@@ -4,7 +4,7 @@ import yt_dlp
 import traceback
 
 app = Flask(__name__)
-CORS(app)  # allow frontend calls from Vercel
+CORS(app)
 
 @app.route("/get_download_link", methods=["POST"])
 def get_download_link():
@@ -17,35 +17,39 @@ def get_download_link():
         if not video_url:
             return jsonify({"error": "No URL provided"}), 400
 
-        # yt_dlp settings for lightweight info extraction
+        # ✅ Handle mp3 vs mp4 separately
         if format_type == "mp3":
             ydl_opts = {
                 "quiet": True,
                 "nocheckcertificate": True,
-                "format": "bestaudio/best",
                 "skip_download": True,
+                "format": "bestaudio/best",
                 "postprocessors": [{
                     "key": "FFmpegExtractAudio",
                     "preferredcodec": "mp3",
                 }],
             }
         else:
-            video_format = (
-                "bestvideo+bestaudio/best"
-                if quality == "best"
-                else f"bestvideo[height<={quality}]+bestaudio/best/best"
-            )
+            # ✅ If user chooses “best”, don’t use a numeric filter
+            if quality == "best":
+                video_format = "bestvideo+bestaudio/best"
+            else:
+                # ✅ Only use height filter when it's numeric (e.g., 720, 1080)
+                try:
+                    int_quality = int(quality)
+                    video_format = f"bestvideo[height<={int_quality}]+bestaudio/best/best"
+                except ValueError:
+                    video_format = "bestvideo+bestaudio/best"
+
             ydl_opts = {
                 "quiet": True,
                 "nocheckcertificate": True,
-                "format": video_format,
                 "skip_download": True,
+                "format": video_format,
             }
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=False)
-
-            # Handle playlists
             if "entries" in info:
                 info = info["entries"][0]
 
